@@ -6,8 +6,8 @@ import numpy as np
 import click
 
 ## Setup logging
-logging.basicConfig()
 logger = logging.getLogger("discover-scps")
+logger.setLevel(logging.INFO)
 
 # Setup orgs client
 session = boto3.Session()
@@ -15,67 +15,90 @@ orgs = session.client("organizations")
 
 
 @click.command()
-@click.argument("outfile", default='scps.csv')
+@click.argument("outfile", default="scps.csv")
 def main(outfile):
-    """Discover scps applied to accounts in an organization."""
-    # Get the account list
-    df = list_accounts(orgs)
+    """Discover scps applied to accounts in an organization.
 
-    # List the scps
-    scps = list_scps(orgs)
+    Writes output to csv format. Default filename is scps.csv
+    """
+    try:
+        # Get the account list
+        df = list_accounts(orgs)
+        logger.info(f"Listed {df.shape[0]} accounts.")
 
-    # Get the policy documenst for all scps
-    policies = get_policies(orgs, scps)
+        # List the scps
+        scps = list_scps(orgs)
+        logger.info(f"Listed {len(scps)} scps.")
 
-    # Get the targets for each scp
-    targets = get_targets_for_scps(orgs, scps)
+        # Get the policy documenst for all scps
+        policies = get_policies(orgs, scps)
+        logger.info("Obtained policy statements for each scp.")
 
-    # Convert the outputs to dataframes for analysis
-    scps = pd.DataFrame(scps)
-    targets = pd.DataFrame(targets)
-    targets = targets.explode("Targets")
-    scps = scps.merge(targets, on="Id")
+        # Get the targets for each scp
+        targets = get_targets_for_scps(orgs, scps)
+        logger.info("Obtained targets for scps.")
+    except Exception as err:
+        raise SystemExit(f"Unable to obtain organizations data {err}")
+
+    try:
+        # Convert the outputs to dataframes for analysis
+        logger.info("Converting output for analysis.")
+        scps = pd.DataFrame(scps)
+        targets = pd.DataFrame(targets)
+        targets = targets.explode("Targets")
+        scps = scps.merge(targets, on="Id")
+    except Exception as err:
+        raise SystemExit(err)
 
     ## Extract account id and target type from target
     scps = scps.loc[scps["Targets"].notna()].copy()
     if scps.empty:
         raise SystemExit("SCPs disabled or not applied")
 
-    # Split target Id and Type from the targets
-    scps[["TargetId", "TargetType"]] = (
-        scps["Targets"].apply(get_target_id).apply(pd.Series)
-    )
+    try:
+        logger.info("Mapping parents for each node.")
 
-    # Get parents for each node
-    scps["Parents"] = scps["TargetId"].apply(list_parents)
+        # Split target Id and Type from the targets
+        scps[["TargetId", "TargetType"]] = (
+            scps["Targets"].apply(get_target_id).apply(pd.Series)
+        )
+        # Get parents for each node
+        scps["Parents"] = scps["TargetId"].apply(list_parents)
 
-    # For each parent explode the item into the dataframe to get 1 parent per row
-    scps = (
-        scps["Parents"]
-        .explode()
-        .apply(pd.Series)
-        .rename(columns={"Id": "ParentId", "Type": "ParentType"})
-        .drop(columns=[0])
-        .join(scps)
-    )
+        # For each parent explode the item into the dataframe to get 1 parent per row
+        scps = (
+            scps["Parents"]
+            .explode()
+            .apply(pd.Series)
+            .rename(columns={"Id": "ParentId", "Type": "ParentType"})
+            .drop(columns=[0])
+            .join(scps)
+        )
+    except Exception as err:
+        raise SystemExit(err)
 
-    ## Clean up SCPS not applied
-    scps.dropna(subset=["TargetId"], inplace=True)
-    df["Path"] = df["Id"].apply(consolidate_path, dataframe=scps)
-    df["Scps"] = df["Path"].apply(get_scps, scps=scps, policies=policies)
+    try:
+        ## Clean up SCPS not applied
+        scps.dropna(subset=["TargetId"], inplace=True)
+        df["Path"] = df["Id"].apply(consolidate_path, dataframe=scps)
+        df["Scps"] = df["Path"].apply(get_scps, scps=scps, policies=policies)
 
-    df_scps = (
-        df["Scps"]
-        .explode()
-        .apply(pd.Series)
-        .join(df)
-        .astype(str)
-        .drop_duplicates()
-        .drop(columns="Scps")
-    )
+        df_scps = (
+            df["Scps"]
+            .explode()
+            .apply(pd.Series)
+            .join(df)
+            .astype(str)
+            .drop_duplicates()
+            .drop(columns="Scps")
+        )
+        logger.info("Cleaned up unapplied SCPs")
+    except Exception as err:
+        raise SystemExit(f"Unable to clean up unapplied SCP data: {err}")
 
     ## Save dataset
     df_scps.to_csv(outfile, index=False)
+    logger.info(f"Wrote {outfile}")
 
 
 def get_targets_for_scps(orgs: boto3.client, scps: pd.DataFrame) -> pd.DataFrame:
