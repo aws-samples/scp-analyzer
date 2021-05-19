@@ -6,6 +6,10 @@ This tool collects and presents all the SCPs applicable to each account in an AW
 
 Developers often get stuck deploying in large organizations that have both SCPs and restrictive IAM policies. This tool allows a security team to catalog the existing applicable SCPs at any given time and use that to help developers understand if their actions are being restricted by an SCP. It also helps understand if planned future actions will be restricted by existing SCPs. 
 
+## Sample output
+
+![scp-analyzeroutput](doc/sample-output.png)
+
 ## How to install & use
 
 ```
