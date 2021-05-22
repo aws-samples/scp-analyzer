@@ -1,9 +1,9 @@
 [tool.poetry]
 name = "scp-analyzer"
-version = "0.2.0"
-description = "Discover and present SCPs for each account in the Organization"
+version = "0.3.0"
+description = "Discover and present SCPs applicable to each account in an AWS Organization"
 authors = ["Pedro Galvao <pgalvao@amazon.co.uk>"]
-license = "https://aws.amazon.com/asl/"
+license = "MIT-0"
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -18,4 +18,5 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-scps = "scp_analyzer:discover_scps.main"
+scp-analyzer = "scp_analyzer:discover_scps.main"
+scp-analyser = "scp_analyzer:discover_scps.main"

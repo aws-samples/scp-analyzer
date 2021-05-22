@@ -6,6 +6,7 @@ import numpy as np
 import click
 
 ## Setup logging
+logging.basicConfig()
 logger = logging.getLogger("discover-scps")
 logger.setLevel(logging.INFO)
 
@@ -96,6 +97,8 @@ def main(outfile):
     except Exception as err:
         raise SystemExit(f"Unable to clean up unapplied SCP data: {err}")
 
+    # Prefix account id with a ' to read as a literal
+    df_scps['Id'] = "'" + df_scps['Id']
     ## Save dataset
     df_scps.to_csv(outfile, index=False)
     logger.info(f"Wrote {outfile}")
