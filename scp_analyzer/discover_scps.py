@@ -1,3 +1,6 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
+
 import pandas as pd
 import boto3
 import logging
@@ -98,7 +101,7 @@ def main(outfile):
         raise SystemExit(f"Unable to clean up unapplied SCP data: {err}")
 
     # Prefix account id with a ' to read as a literal
-    df_scps['Id'] = "'" + df_scps['Id']
+    df_scps["Id"] = "'" + df_scps["Id"]
     ## Save dataset
     df_scps.to_csv(outfile, index=False)
     logger.info(f"Wrote {outfile}")
