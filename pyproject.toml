@@ -2,8 +2,10 @@
 name = "scp-analyzer"
 version = "0.3.0"
 description = "Discover and present SCPs applicable to each account in an AWS Organization"
+classifiers = ["Development Status :: 5 - Production/Stable", "Intended Audience :: Developers", "Programming Language :: Python :: 3", "License :: OSI Approved :: MIT No Attribution License (MIT-0)", "Operating System :: OS Independent", "Natural Language :: English"]
 authors = ["Pedro Galvao <pgalvao@amazon.co.uk>"]
 license = "MIT-0"
+readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.9"
