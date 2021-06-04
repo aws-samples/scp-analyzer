@@ -1,24 +1,25 @@
-# SCP analyzer
+# Service Control Policy Analyzer
 
-This tool collects and presents all the SCPs applicable to each account in an AWS Organization. It writes the data to a csv formatted file.
-
-## Why do we need this tool?
-
-Developers often get stuck deploying in large organizations that have both SCPs and restrictive IAM policies. This tool allows a security team to catalog the existing applicable SCPs at any given time and use that to help developers understand if their actions are being restricted by an SCP. It also helps understand if planned future actions will be restricted by existing SCPs. 
+This tool collects and presents all the Service Control Policies (SCPs) applicable to each account in an AWS Organization. It's purpose is to help developers and security teams understand how SCPs might be blocking activities in any account of the AWS Organization.
 
 ## Sample output
 
 ![scp-analyzeroutput](doc/sample-output.png)
 
-## How to install & use
+## Installation
 
-```
-1. Clone the repo
-2. pip install --user . or make install
-3. scps --help for help
-4. scps to just execute
-```
+`pip install scp-analyzer` 
 
-## Use requirements
+## Use
 
-You will need to be in the Organizations Management account or in a delegated administration account with Read Only permissions to the Organizations API to run this.
+Obtain AWS CLI credentials to the Organizations Management account or a delegated administration account. Ensure you have Organizations Read Only permissions and run `scp-analyzer` to collect data. The tool will write output to a csv file.
+
+## Security
+
+See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
+
+## License
+
+This library is licensed under the MIT-0 License. See the LICENSE file.
+
+
