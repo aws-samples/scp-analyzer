@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "scp-analyzer"
-version = "0.3.0"
+version = "0.3.1"
 description = "Discover and present SCPs applicable to each account in an AWS Organization"
 classifiers = ["Development Status :: 5 - Production/Stable", "Intended Audience :: Developers", "Programming Language :: Python :: 3", "License :: OSI Approved :: MIT No Attribution License (MIT-0)", "Operating System :: OS Independent", "Natural Language :: English"]
 authors = ["Pedro Galvao <pgalvao@amazon.co.uk>"]
@@ -15,7 +15,9 @@ pandas = "^1.2.4"
 boto3 = "^1.17.73"
 
 [tool.poetry.dev-dependencies]
-black = "^21.5b1"
+safety = "^1.10.3"
+pip-licenses = "^3.5.4"
+black = "^22.3.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
