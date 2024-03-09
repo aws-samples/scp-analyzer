@@ -1,12 +1,15 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
 
-import pandas as pd
-import boto3
-import logging
 import json
+import logging
+
+import boto3
 import numpy as np
-import click
+import pandas as pd
+from typer import Typer
+
+app = Typer()
 
 ## Setup logging
 logging.basicConfig()
@@ -18,9 +21,8 @@ session = boto3.Session()
 orgs = session.client("organizations")
 
 
-@click.command()
-@click.argument("outfile", default="scps.csv")
-def main(outfile):
+@app.command()
+def main(outfile: str = "scps.csv"):
     """Discover scps applied to accounts in an organization.
 
     Writes output to csv format. Default filename is scps.csv
@@ -191,3 +193,7 @@ def get_scps(targets, scps, policies):
             policy_statements.extend(policies[pid]["Statement"])
 
     return policy_statements
+
+
+if __name__ == "__main__":
+    app()
