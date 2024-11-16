@@ -176,7 +176,7 @@ def consolidate_path(target_id, dataframe):
         logger.error(f"Unable to traverse node: {err}")
         return
 
-    if parent is not np.NaN:
+    if parent is not np.nan:
         hops.extend(consolidate_path(parent, dataframe))
     return hops
 
