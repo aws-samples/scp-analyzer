@@ -4,17 +4,14 @@
 help: 
 	@cat Makefile
 
-all: prep check lint
+all: prep
 
 prep:
-	poetry install
-
-lint:
-	poetry run black scp_analyzer/
-
-check:
-	poetry run pip-audit --local
-	poetry run bandit -r scp_analyzer/
+	uv sync 
+	uv run pip-audit --local || (uv sync --upgrade && uv run pip-audit --local)
+	uv run pip-licenses --output NOTICE
+	uv run ruff check --fix 
+	uv run ruff format
 
 clean:
 	rm -r .venv/

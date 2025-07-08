@@ -150,7 +150,8 @@ def list_accounts(orgs):
 def get_target_id(x):
     try:
         return x["TargetId"], x["Type"]
-    except:
+    except Exception as err:
+        logger.error("Error getting target id {x}: %s", err)
         return
 
 
